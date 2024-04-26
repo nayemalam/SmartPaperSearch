@@ -8,22 +8,21 @@
   select {
     margin-left: 20px;
   }
-}
 
-button {
-  margin: 0 5px;
-  padding: 5px 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  cursor: pointer;
+  button {
+    margin: 0 5px;
+    cursor: pointer;
+    width: 2rem !important;
+    min-width: 0 !important;
 
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
 
-  &.active {
-    background-color: #3f51b5;
-    color: white;
+    &.active {
+      background-color: #3f51b5;
+      color: white;
+    }
   }
 }

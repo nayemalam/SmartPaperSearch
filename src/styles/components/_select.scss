@@ -8,7 +8,7 @@ select {
   color: black;
   border-radius: 0.25em;
   box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
-  width: 50px;
+  width: auto;
   cursor: pointer;
   /* Remove IE arrow */
   &::-ms-expand {

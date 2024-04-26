@@ -54,6 +54,16 @@ h6 {
       }
     }
   }
+
+  .div-as-link {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      color: #0056b3;
+    }
+  }
 }
 
 /* total width */

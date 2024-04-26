@@ -13,7 +13,6 @@ import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { CiSearch } from 'react-icons/ci';
-import { FiExternalLink } from 'react-icons/fi';
 import { IoIosCloudDownload } from 'react-icons/io';
 import Moment from 'react-moment';
 import { toast } from 'react-toastify';
@@ -180,6 +179,18 @@ const Main = () => {
     };
   }, [fetchPapers, debouncedQuery, currentPage, itemsPerPage]);
 
+  // auto focus on search field when doing CMD+K
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'k' && event.metaKey) {
+        event.preventDefault();
+        document.getElementById('search-field')?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="main">
       <div className="search-field">
@@ -187,6 +198,7 @@ const Main = () => {
         <div className="relative">
           <CiSearch className="absolute search-icon" />
           <input
+            id="search-field"
             type="text"
             className="search-input"
             placeholder="Search for papers (e.g., drone AND (package OR delivery))"
@@ -282,10 +294,19 @@ const Main = () => {
                     <div>
                       <h3 title={paper.title}>{paper.title}</h3>
                       <p>
-                        <Moment format="MMMM Do YYYY">
+                        <Moment format="MMMM Do, YYYY">
                           {paper.publishedDate}
                         </Moment>
                       </p>
+                      <div
+                        className="div-as-link"
+                        onClick={(e: any) => {
+                          e.stopPropagation();
+                          alert(paper.abstract);
+                        }}
+                      >
+                        Read Abstract
+                      </div>
                     </div>
                   </div>
                   <div className="bottom">
@@ -297,34 +318,9 @@ const Main = () => {
                     <div className="actions">
                       <div className="icon-container">
                         <IoIosCloudDownload
-                          onClick={() =>
-                            window.open(paper.downloadUrl, '_blank')
-                          }
-                          className="icon"
-                          color="#757575"
-                          cursor="pointer"
-                          width="20"
-                          height="20"
-                        />
-                      </div>
-                      <div className="icon-container">
-                        <FiExternalLink
-                          onClick={() => {
-                            const link = paper.links?.find(
-                              (link: any) => link.type === 'reader',
-                            )
-                              ? paper.links?.find(
-                                  (link: any) => link.type === 'reader',
-                                ).url
-                              : paper.links?.length > 0
-                              ? paper.links[0].url
-                              : null;
-
-                            if (link) {
-                              return window.open(link, '_blank');
-                            } else {
-                              toast.error('No link available');
-                            }
+                          onClick={(e: any) => {
+                            e.stopPropagation();
+                            window.open(paper.downloadUrl, '_blank');
                           }}
                           className="icon"
                           color="#757575"

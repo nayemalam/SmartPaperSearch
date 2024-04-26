@@ -38,14 +38,24 @@ const Pagination = ({
           ))}
         </select>
       </div>
-      <div>
-        <button
-          className="button"
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1 || totalItems === 0}
-        >
-          <GoChevronLeft />
-        </button>
+      <div
+        style={{
+          width: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: '10px',
+        }}
+      >
+        {currentPage > 1 && (
+          <button
+            className="button"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1 || totalItems === 0}
+          >
+            <GoChevronLeft />
+          </button>
+        )}
         {/* {Array.from({ length: totalPages }, (_, index) => (
         <button
           key={index + 1}
@@ -55,6 +65,9 @@ const Pagination = ({
           {index + 1}
         </button>
       ))} */}
+        <p className="page">
+          Page {currentPage} of {totalPages.toLocaleString()}
+        </p>
         <button
           className="button"
           onClick={() => handlePageChange(currentPage + 1)}
