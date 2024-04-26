@@ -1,0 +1,18 @@
+// prettier-ignore
+@import 
+// theme
+'./styles/utilities/utilities',
+'./styles/utilities/mixins',
+'./styles/utilities/variables',
+'./styles/utilities/loading',
+'./styles/theme/app',
+// main page components
+'./styles/pages/main',
+// components
+'./styles/components/button',
+'./styles/components/card',
+'./styles/components/select',
+'./styles/components/skeleton',
+'./styles/components/row',
+'./styles/components/search-field',
+'./styles/components/pagination';
