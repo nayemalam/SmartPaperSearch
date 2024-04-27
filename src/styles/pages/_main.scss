@@ -19,6 +19,12 @@
       scroll-behavior: smooth;
       padding-bottom: 100px;
       overflow-y: auto;
+      margin-top: 30px;
+
+      a {
+        text-decoration: none;
+        color: #444 !important;
+      }
     }
   }
 

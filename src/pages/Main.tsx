@@ -14,8 +14,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { CiSearch } from 'react-icons/ci';
 import { IoIosCloudDownload } from 'react-icons/io';
+import { IoReaderOutline } from 'react-icons/io5';
 import Moment from 'react-moment';
-import { toast } from 'react-toastify';
 import Pagination from '../components/Pagination';
 import { Skeleton } from '../components/Skeleton';
 import { normalizeQuery } from '../helpers';
@@ -84,19 +84,6 @@ const Main = () => {
     [currentPage, itemsPerPage, query],
   );
 
-  const keywordColorMap: any = {};
-
-  function getColorForKeyword(keyword: string) {
-    if (keywordColorMap[keyword]) {
-      return keywordColorMap[keyword];
-    }
-    const newColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
-      Math.random() * 255,
-    )}, ${Math.floor(Math.random() * 255)}, 0.5)`;
-    keywordColorMap[keyword] = newColor;
-    return newColor;
-  }
-
   const updateChartData = (papers: any[]) => {
     const keywordCounts: { [keyword: string]: number } = {};
     const keywords = query.toLowerCase().match(/\b(\w+)\b/g) || [];
@@ -112,9 +99,9 @@ const Main = () => {
         keywordCounts[keyword] =
           (keywordCounts[keyword] || 0) + countInTitle + countInAbstract;
       });
-    });
 
-    const colors = keywords.map(getColorForKeyword);
+      console.log({ keywordCounts });
+    });
 
     const data: ChartDataType = {
       labels: Object.keys(keywordCounts),
@@ -122,10 +109,18 @@ const Main = () => {
         {
           label: 'Keyword Occurrences',
           data: Object.values(keywordCounts),
-          backgroundColor: colors,
+          // TODO: generate random colors and maintain them for each keyword
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+          ],
           datalabels: {
-            align: 'end',
-            anchor: 'end',
+            align: 'center',
+            anchor: 'center',
           },
         },
       ],
@@ -139,10 +134,6 @@ const Main = () => {
     maintainAspectRatio: false,
     plugins: {
       datalabels: {
-        anchor: 'center' as const,
-        align: 'center' as const,
-        textAlign: 'center' as const,
-        // offset: -50,
         color: '#000',
         formatter: (
           value: {
@@ -214,6 +205,7 @@ const Main = () => {
           <div
             style={{
               display: 'flex',
+              justifyContent: 'center',
               flexWrap: 'wrap',
               flexDirection: 'row',
               gap: '10px',
@@ -225,7 +217,7 @@ const Main = () => {
               <Skeleton
                 key={index}
                 style={{
-                  height: '200px',
+                  height: '180px',
                   margin: '1rem',
                   width: '290px',
                 }}
@@ -269,70 +261,75 @@ const Main = () => {
           >
             {!isLoading &&
               totalItems > 0 &&
-              papers.map(paper => (
-                <div
-                  className="card card-1"
-                  key={paper.id}
-                  onClick={() => {
-                    const link = paper.links?.find(
-                      (link: any) => link.type === 'reader',
-                    )
-                      ? paper.links?.find((link: any) => link.type === 'reader')
-                          .url
-                      : paper.links?.length > 0
-                      ? paper.links[0].url
-                      : null;
+              papers.map(paper => {
+                let link = paper.links?.find(
+                  (link: any) => link.type === 'reader',
+                )
+                  ? paper.links?.find((link: any) => link.type === 'reader').url
+                  : paper.links?.length > 0
+                  ? paper.links[0].url
+                  : null;
 
-                    if (link) {
-                      return window.open(link, '_blank');
-                    } else {
-                      toast.error('No link available');
-                    }
-                  }}
-                >
-                  <div className="top">
-                    <div>
-                      <h3 title={paper.title}>{paper.title}</h3>
-                      <p>
-                        <Moment format="MMMM Do, YYYY">
-                          {paper.publishedDate}
-                        </Moment>
-                      </p>
-                      <div
-                        className="div-as-link"
-                        onClick={(e: any) => {
-                          e.stopPropagation();
-                          alert(paper.abstract);
-                        }}
+                if (!link) {
+                  link = paper.downloadUrl || '#';
+                }
+
+                return (
+                  <a
+                    className="card card-1"
+                    key={paper.id}
+                    href={link}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <div className="top">
+                      <div>
+                        <h3 title={paper.title}>{paper.title}</h3>
+                        <p>
+                          <Moment format="MMMM Do, YYYY">
+                            {paper.publishedDate}
+                          </Moment>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bottom">
+                      <p
+                        title={paper.authors.map((author: any) => author.name)}
                       >
-                        Read Abstract
+                        {paper.authors
+                          .map((author: any) => author.name)
+                          .join(', ')}
+                      </p>
+                      <div className="actions">
+                        <div className="icon-container">
+                          <IoIosCloudDownload
+                            title="Download Paper"
+                            onClick={(e: any) => {
+                              e.preventDefault();
+                              window.open(paper.downloadUrl, '_blank');
+                            }}
+                            className="icon"
+                            color="#757575"
+                            cursor="pointer"
+                          />
+                        </div>
+                        <div className="icon-container">
+                          <IoReaderOutline
+                            title="Read Abstract"
+                            onClick={(e: any) => {
+                              e.preventDefault();
+                              alert(paper.abstract);
+                            }}
+                            className="icon"
+                            color="#757575"
+                            cursor="pointer"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="bottom">
-                    <p title={paper.authors.map((author: any) => author.name)}>
-                      {paper.authors
-                        .map((author: any) => author.name)
-                        .join(', ')}
-                    </p>
-                    <div className="actions">
-                      <div className="icon-container">
-                        <IoIosCloudDownload
-                          onClick={(e: any) => {
-                            e.stopPropagation();
-                            window.open(paper.downloadUrl, '_blank');
-                          }}
-                          className="icon"
-                          color="#757575"
-                          cursor="pointer"
-                          width="20"
-                          height="20"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  </a>
+                );
+              })}
 
             <Pagination
               currentPage={currentPage}
@@ -347,7 +344,7 @@ const Main = () => {
             <div
               style={{
                 height: '300px',
-                width: '300px',
+                width: 'auto',
                 alignSelf: 'center',
               }}
             >
