@@ -17,20 +17,11 @@ const useChartData = () => {
 
   const resetChartData = useCallback(() => {
     setChartData(initialData);
-  }, [initialData]);
+  }, []);
 
   const updateChartData = useCallback((papers, query) => {
     if (!papers.length || !query) {
-      setChartData({
-        labels: [],
-        datasets: [
-          {
-            label: 'Keyword Occurrences',
-            data: [],
-            backgroundColor: [],
-          },
-        ],
-      });
+      resetChartData();
       return;
     }
 
@@ -59,7 +50,6 @@ const useChartData = () => {
     });
 
     const labels = Object.keys(keywordCounts);
-    // const data = Object.values(keywordCounts);
 
     const data: ChartDataType = {
       labels,

@@ -46,18 +46,8 @@ export const KeywordChart = ({ chartData }: Props) => {
   };
 
   return (
-    <div
-      style={{
-        height: '300px',
-        width: '300px',
-        alignSelf: 'center',
-      }}
-    >
-      <Bar
-        data={chartData}
-        options={options}
-        style={{ position: 'fixed', top: '40%' }}
-      />
+    <div className="chart-container">
+      <Bar data={chartData} options={options} className="keyword-chart" />
     </div>
   );
 };

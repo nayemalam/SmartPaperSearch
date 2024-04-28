@@ -38,15 +38,7 @@ const Pagination = ({
           ))}
         </select>
       </div>
-      <div
-        style={{
-          width: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: '10px',
-        }}
-      >
+      <div className="pagination-buttons">
         {currentPage > 1 && (
           <button
             className="button"
@@ -59,7 +51,7 @@ const Pagination = ({
         {/* {Array.from({ length: totalPages }, (_, index) => (
         <button
           key={index + 1}
-          className={index + 1 === currentPage ? 'active' : ''}
+          className={`button ${index + 1 === currentPage ? 'active' : ''}`}
           onClick={() => handlePageChange(index + 1)}
         >
           {index + 1}

@@ -35,8 +35,15 @@
     margin-top: 10px;
   }
 
-  .keyword-chart {
+  .chart-container {
+    height: 300px;
+    width: 300px;
     align-self: center;
+
+    .keyword-chart {
+      position: fixed;
+      top: 40%;
+    }
   }
 
   .no-results-container {
@@ -53,5 +60,12 @@
       font-family: $mainFont !important;
       font-size: 1.2rem;
     }
+  }
+
+  .analytics-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
   }
 }
