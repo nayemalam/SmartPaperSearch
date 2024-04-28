@@ -19,63 +19,66 @@ const useChartData = () => {
     setChartData(initialData);
   }, []);
 
-  const updateChartData = useCallback((papers, query) => {
-    if (!papers.length || !query) {
-      resetChartData();
-      return;
-    }
+  const updateChartData = useCallback(
+    (papers, query) => {
+      if (!papers.length || !query) {
+        resetChartData();
+        return;
+      }
 
-    const keywordCounts: { [keyword: string]: number } = {};
-    const keywords = query.toLowerCase().match(/\b(\w+)\b/g) || [];
+      const keywordCounts: { [keyword: string]: number } = {};
+      const keywords = query.toLowerCase().match(/\b(\w+)\b/g) || [];
 
-    papers.forEach((paper: any) => {
-      keywords.forEach((keyword: any) => {
-        let countInTitle = 0;
-        let countInAbstract = 0;
-        if (paper.title) {
-          countInTitle = (
-            paper.title.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
-          ).length;
-        }
+      papers.forEach((paper: any) => {
+        keywords.forEach((keyword: any) => {
+          let countInTitle = 0;
+          let countInAbstract = 0;
+          if (paper.title) {
+            countInTitle = (
+              paper.title.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
+            ).length;
+          }
 
-        if (paper.abstract) {
-          countInAbstract = (
-            paper.abstract.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
-          ).length;
-        }
+          if (paper.abstract) {
+            countInAbstract = (
+              paper.abstract.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
+            ).length;
+          }
 
-        keywordCounts[keyword] =
-          (keywordCounts[keyword] || 0) + countInTitle + countInAbstract;
+          keywordCounts[keyword] =
+            (keywordCounts[keyword] || 0) + countInTitle + countInAbstract;
+        });
       });
-    });
 
-    const labels = Object.keys(keywordCounts);
+      const labels = Object.keys(keywordCounts);
 
-    const data: ChartDataType = {
-      labels,
-      datasets: [
-        {
-          label: 'Keyword Occurrences',
-          data: Object.values(keywordCounts),
-          // TODO: generate random colors and maintain them for each keyword
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-          ],
-          datalabels: {
-            align: 'center',
-            anchor: 'center',
+      const data: ChartDataType = {
+        labels,
+        datasets: [
+          {
+            label: 'Keyword Occurrences',
+            data: Object.values(keywordCounts),
+            // TODO: generate random colors and maintain them for each keyword
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+            ],
+            datalabels: {
+              align: 'center',
+              anchor: 'center',
+            },
           },
-        },
-      ],
-    };
+        ],
+      };
 
-    setChartData(data);
-  }, []);
+      setChartData(data);
+    },
+    [resetChartData],
+  );
 
   return {
     resetChartData,

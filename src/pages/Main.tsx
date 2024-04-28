@@ -10,9 +10,7 @@ import useSearch from '../hooks/useSearch';
 
 const Main = () => {
   const [isShowingAnalytics, setIsShowingAnalytics] = useState(false);
-
   const { chartData, updateChartData } = useChartData();
-
   const {
     query,
     setQuery,

@@ -5,5 +5,3 @@ export function normalizeQuery(query: string) {
     .trim()
     .replace(/\s+/g, ' '); // Convert multiple spaces to a single space
 }
-
-// TODO: testing

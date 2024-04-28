@@ -5,7 +5,7 @@ import paperService from '../services/PaperService';
 import { Paper } from '../types';
 
 type Props = {
-  updateChartDataFunction?: (papers: any[], query: string) => void;
+  updateChartDataFunction: (papers: any[], query: string) => void;
   defaultQuery?: string;
   defaultPage?: number;
   defaultItemsPerPage?: number;
@@ -43,7 +43,7 @@ const useSearch = ({
     if (!debouncedQuery) {
       setResults([]);
       setTotalItems(0);
-      updateChartDataFunction?.([], '');
+      updateChartDataFunction([], '');
       return;
     }
 
@@ -60,7 +60,7 @@ const useSearch = ({
         );
         setResults(response.results);
         setTotalItems(response.totalHits);
-        updateChartDataFunction?.(response.results, debouncedQuery);
+        updateChartDataFunction(response.results, debouncedQuery);
       } catch (err) {
         setError('Failed to fetch papers');
         console.error('Search error:', err);
