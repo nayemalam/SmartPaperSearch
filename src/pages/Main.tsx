@@ -1,48 +1,15 @@
-import {
-  BarElement,
-  CategoryScale,
-  ChartData,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  Title,
-  Tooltip,
-} from 'chart.js';
-import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
+import ContentLoader from 'react-content-loader';
 import { CiSearch } from 'react-icons/ci';
 import { IoIosCloudDownload } from 'react-icons/io';
 import { IoReaderOutline } from 'react-icons/io5';
 import Moment from 'react-moment';
+import { KeywordChart } from '../components/KeywordChart';
 import Pagination from '../components/Pagination';
-import { Skeleton } from '../components/Skeleton';
 import { normalizeQuery } from '../helpers';
+import useChartData from '../hooks/useChartData';
 import paperService from '../services/PaperService';
-
-type ChartDataType = ChartData<'bar', number[], string>;
-
-const initialChartData: ChartDataType = {
-  labels: [],
-  datasets: [
-    {
-      label: 'Keyword Occurrences',
-      data: [],
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels,
-);
 
 const Main = () => {
   const [query, setQuery] = useState('');
@@ -53,8 +20,9 @@ const Main = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [chartData, setChartData] = useState<ChartDataType>(initialChartData);
   const [isShowingAnalytics, setIsShowingAnalytics] = useState(false);
+
+  const { resetChartData, chartData, updateChartData } = useChartData();
 
   const fetchPapers = useCallback(
     _.debounce(
@@ -71,7 +39,7 @@ const Main = () => {
           );
           setPapers(response.results);
           setTotalItems(response.totalHits);
-          updateChartData(response.results);
+          updateChartData(response.results, query);
         } catch (error) {
           setError('Failed to fetch papers');
           console.error('Failed to fetch data:', error);
@@ -81,72 +49,8 @@ const Main = () => {
       },
       300,
     ),
-    [currentPage, itemsPerPage, query],
+    [currentPage, itemsPerPage, debouncedQuery],
   );
-
-  const updateChartData = (papers: any[]) => {
-    const keywordCounts: { [keyword: string]: number } = {};
-    const keywords = query.toLowerCase().match(/\b(\w+)\b/g) || [];
-
-    papers.forEach(paper => {
-      keywords.forEach(keyword => {
-        const countInTitle = (
-          paper.title.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
-        ).length;
-        const countInAbstract = (
-          paper.abstract.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
-        ).length;
-        keywordCounts[keyword] =
-          (keywordCounts[keyword] || 0) + countInTitle + countInAbstract;
-      });
-
-      console.log({ keywordCounts });
-    });
-
-    const data: ChartDataType = {
-      labels: Object.keys(keywordCounts),
-      datasets: [
-        {
-          label: 'Keyword Occurrences',
-          data: Object.values(keywordCounts),
-          // TODO: generate random colors and maintain them for each keyword
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-          ],
-          datalabels: {
-            align: 'center',
-            anchor: 'center',
-          },
-        },
-      ],
-    };
-
-    setChartData(data);
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      datalabels: {
-        color: '#000',
-        formatter: (
-          value: {
-            x: number;
-            y: number;
-          },
-          context: Context,
-        ) => {
-          return context.dataset.data[context.dataIndex];
-        },
-      },
-    },
-  };
 
   useEffect(() => {
     const handler = _.debounce(() => {
@@ -160,7 +64,8 @@ const Main = () => {
   useEffect(() => {
     if (!debouncedQuery) {
       setPapers([]);
-      setChartData(initialChartData);
+      resetChartData();
+      setTotalItems(0);
       return;
     }
 
@@ -168,7 +73,7 @@ const Main = () => {
     return () => {
       fetchPapers.cancel(); // cancel the debounced call on component unmount
     };
-  }, [fetchPapers, debouncedQuery, currentPage, itemsPerPage]);
+  }, [fetchPapers, debouncedQuery, currentPage, itemsPerPage, resetChartData]);
 
   // auto focus on search field when doing CMD+K
   useEffect(() => {
@@ -205,23 +110,25 @@ const Main = () => {
           <div
             style={{
               display: 'flex',
-              justifyContent: 'center',
               flexWrap: 'wrap',
               flexDirection: 'row',
               gap: '10px',
               width: isShowingAnalytics ? '75%' : '100%',
-              marginTop: '50px',
+              marginTop: '10px',
             }}
           >
             {Array.from({ length: 6 }, (_, index) => (
-              <Skeleton
+              <ContentLoader
                 key={index}
-                style={{
-                  height: '180px',
-                  margin: '1rem',
-                  width: '290px',
-                }}
-              />
+                speed={2}
+                width={290}
+                height={200}
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+                style={{ margin: '1rem' }}
+              >
+                <rect x="0" y="0" rx="0" ry="0" width="290" height="200" />
+              </ContentLoader>
             ))}
           </div>
           {isShowingAnalytics && (
@@ -230,15 +137,16 @@ const Main = () => {
                 width: '25%',
               }}
             >
-              <Skeleton
-                style={{
-                  height: '300px',
-                  margin: '1rem',
-                  width: '300px',
-                  position: 'fixed',
-                  top: '40%',
-                }}
-              />
+              <ContentLoader
+                speed={2}
+                width={290}
+                height={300}
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+                style={{ margin: '1rem', position: 'fixed', top: '40%' }}
+              >
+                <rect x="0" y="0" rx="0" ry="0" width="290" height="300" />
+              </ContentLoader>
             </div>
           )}
         </div>
@@ -247,7 +155,7 @@ const Main = () => {
       {!isLoading && totalItems === 0 && (
         <div className="no-results-container">
           <h2>No results found</h2>
-          {error && <h2>{error}</h2>}
+          {error && <h2 className="error">{error}</h2>}
         </div>
       )}
 
@@ -340,21 +248,7 @@ const Main = () => {
             />
           </div>
 
-          {isShowingAnalytics && (
-            <div
-              style={{
-                height: '300px',
-                width: 'auto',
-                alignSelf: 'center',
-              }}
-            >
-              <Bar
-                data={chartData}
-                options={options}
-                style={{ position: 'fixed', top: '40%' }}
-              />
-            </div>
-          )}
+          {isShowingAnalytics && <KeywordChart chartData={chartData} />}
         </div>
       )}
 

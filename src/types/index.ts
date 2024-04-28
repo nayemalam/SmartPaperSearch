@@ -1,3 +1,5 @@
+import { ChartData } from 'chart.js';
+
 export type Paper = {
   id: string;
   title: string;
@@ -5,3 +7,5 @@ export type Paper = {
   datePublished: string;
   abstract: string;
 };
+
+export type ChartDataType = ChartData<'bar', number[], string>;
