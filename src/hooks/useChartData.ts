@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { getKeywordCounts } from '../helpers';
 import { ChartDataType } from '../types';
 
 const initialData: ChartDataType = {
@@ -26,29 +27,10 @@ const useChartData = () => {
         return;
       }
 
-      const keywordCounts: { [keyword: string]: number } = {};
-      const keywords = query.toLowerCase().match(/\b(\w+)\b/g) || [];
-
-      papers.forEach((paper: any) => {
-        keywords.forEach((keyword: any) => {
-          let countInTitle = 0;
-          let countInAbstract = 0;
-          if (paper.title) {
-            countInTitle = (
-              paper.title.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
-            ).length;
-          }
-
-          if (paper.abstract) {
-            countInAbstract = (
-              paper.abstract.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []
-            ).length;
-          }
-
-          keywordCounts[keyword] =
-            (keywordCounts[keyword] || 0) + countInTitle + countInAbstract;
-        });
-      });
+      const keywordCounts: { [keyword: string]: number } = getKeywordCounts(
+        papers,
+        query,
+      );
 
       const labels = Object.keys(keywordCounts);
 

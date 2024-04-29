@@ -75,6 +75,7 @@ const useSearch = ({
   return {
     query,
     setQuery,
+    debouncedQuery,
     results,
     totalItems,
     isLoading,

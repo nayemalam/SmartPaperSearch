@@ -10,10 +10,10 @@ export const MainLoadingSkeleton = ({ isShowingAnalytics }: Props) => {
       <div
         className="card-skeleton-container"
         style={{
-          width: isShowingAnalytics ? '75%' : '100%',
+          width: isShowingAnalytics ? '80%' : '100%',
         }}
       >
-        {Array.from({ length: 6 }, (_, index) => (
+        {Array.from({ length: 10 }, (_, index) => (
           <ContentLoader
             key={index}
             speed={2}
@@ -31,13 +31,13 @@ export const MainLoadingSkeleton = ({ isShowingAnalytics }: Props) => {
         <div className="chart-skeleton-container">
           <ContentLoader
             speed={2}
-            width={290}
-            height={300}
+            width={320}
+            height={290}
             backgroundColor="#f3f3f3"
             foregroundColor="#ecebeb"
             className="chart-skeleton"
           >
-            <rect x="0" y="0" rx="0" ry="0" width="290" height="300" />
+            <rect x="0" y="0" rx="0" ry="0" width="400" height="300" />
           </ContentLoader>
         </div>
       )}

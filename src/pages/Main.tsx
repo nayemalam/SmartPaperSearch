@@ -14,6 +14,7 @@ const Main = () => {
   const {
     query,
     setQuery,
+    debouncedQuery,
     results: papers,
     totalItems,
     isLoading,
@@ -38,14 +39,16 @@ const Main = () => {
         <MainLoadingSkeleton isShowingAnalytics={isShowingAnalytics} />
       )}
 
-      {!isLoading && totalItems === 0 && <NoResults error={error} />}
+      {!isLoading && totalItems === 0 && (
+        <NoResults error={error} query={debouncedQuery} />
+      )}
 
       {totalItems > 0 && !isLoading && papers.length > 0 && (
         <div className="container">
           <div
             className="cards"
             style={{
-              width: isShowingAnalytics ? '75%' : '100%',
+              width: isShowingAnalytics ? '80%' : '100%',
             }}
           >
             {!isLoading &&
