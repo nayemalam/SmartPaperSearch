@@ -7,6 +7,7 @@
   - [How To Run](#how-to-run)
       - [To run the application locally](#to-run-the-application-locally)
       - [Build and serve application for prod](#build-and-serve-application-for-prod)
+  - [How To Test](#how-to-test)
   - [What does this do?](#what-does-this-do)
   - [Additional features](#additional-features)
   - [Notes, comments \& potential improvements](#notes-comments--potential-improvements)
@@ -43,6 +44,11 @@ yarn start
 yarn build && yarn serve
 ```
 
+## How To Test
+```bash
+yarn test
+```
+
 ## What does this do?
 - [x] Search through the [CORE API](https://api.core.ac.uk/docs/v3#tag/Search/operation/get_globalall_entities_search)
 - [x] Present papers in a list 
@@ -70,3 +76,4 @@ yarn build && yarn serve
 - better typing (preferably coming from the API since copying the type locally does not maintain type integrity)
 - Tooltips instead of titles
 - Tried copying similar design with cypris.ai branding
+- could be useful to add a "export keyword trends" button for offine use (spreadsheet for example)
